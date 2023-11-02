@@ -1,0 +1,54 @@
+---
+title: "20231031 Tidy Tuesday - Spooky Article author fact checked df"
+output: html_document
+date: "2023-10-31"
+---
+# Description of Dataset
+Snope Articles written by authors who fact-check various urban legends and stories and give them various ratings.
+
+Here's a more condensed version with fewer code chunks:
+
+```{r}
+library(wordcloud2)
+library(tm)
+library(readr)
+library(dplyr)
+library(plotly)
+library(png)
+library(htmlwidgets)
+```
+
+```{r data-prep}
+# Load Dataset, Filter, and Convert Claims into a Corpus
+horror_articles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-10-31/horror_articles.csv')
+horror_articles <- horror_articles %>% filter(rating == "legend")
+
+horror_articles.corpus = Corpus(VectorSource(horror_articles$claim))
+horror_articles.corpus <- horror_articles.corpus %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace) %>%
+  tm_map(content_transformer(tolower)) %>%
+  tm_map(removeWords, stopwords("english")) %>%
+  tm_map(removeWords, stopwords("SMART"))
+
+tdm = TermDocumentMatrix(horror_articles.corpus) %>%
+  as.matrix()
+words = sort(rowSums(tdm), decreasing = TRUE)
+df = data.frame(word = names(words), freq = words)
+df <- df %>% filter(nchar(as.character(word)) > 2, word != "don’")
+```
+
+```{r wordcloud}
+# Create and Save Word Cloud
+word_cloud <- wordcloud2(df, fontFamily="Times New Roman")
+saveWidget(word_cloud, file="C:/Users/Jamal Mansuri/Documents/wordcloud.html")
+```
+
+```{r view-data}
+# View Top Words
+head(df, n = 10)
+nrow(horror_articles)
+```
+```
+
