@@ -6,11 +6,19 @@ date: "2023-10-31"
 # Description of Dataset
 Snope Articles written by authors who fact-check various urban legends and stories and give them various ratings, within the dataset also includes a central claim, which is a summary sentence of the article. This was used to text-mine keywords to generate the word cloud and associate it with the rating column. 
 
+# My thought process for this dataset
+I initially tried to text-mine the claims vector for geographical locations and tie them to a coordinate system using packages like map and building out a series using the dates published vector and with a toggle function based on the rating vector. However, this proved to be difficult, the text-mining showed not only states but counties and cities. Hence, I decided to represent filtered data based on ratings in a word cloud, with hopes of gaining insights into what types of articles tended to be horror legends and what they typically include. 
+
+```{r install packages}
+install.packages(c("wordcloud2", "tm", "readr", "dplyr", "htmlwidgets"))
+```
+
 ```{r loading libraries}
 library(wordcloud2)
 library(tm)
 library(readr)
 library(dplyr)
+library(htmlwidgets)
 ```
 
 ```{r data-prep}
@@ -38,7 +46,7 @@ df <- df %>% filter(nchar(as.character(word)) > 2, word != "don’")
 
 ```{r wordcloud}
 word_cloud <- wordcloud2(df, fontFamily="Times New Roman")
-saveWidget(word_cloud, file="C:/Users/Jamal Mansuri/Documents/wordcloud.html")
+word_cloud
 ```
 
 ```{r view-data}
@@ -46,5 +54,5 @@ saveWidget(word_cloud, file="C:/Users/Jamal Mansuri/Documents/wordcloud.html")
 head(df, n = 10)
 nrow(horror_articles)
 ```
-```
+
 
