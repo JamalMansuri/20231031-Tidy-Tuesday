@@ -4,18 +4,13 @@ output: html_document
 date: "2023-10-31"
 ---
 # Description of Dataset
-Snope Articles written by authors who fact-check various urban legends and stories and give them various ratings.
+Snope Articles written by authors who fact-check various urban legends and stories and give them various ratings, within the dataset also includes a central claim, which is a summary sentence of the article. This was used to text-mine keywords to generate the word cloud and associate it with the rating column. 
 
-Here's a more condensed version with fewer code chunks:
-
-```{r}
+```{r loading libraries}
 library(wordcloud2)
 library(tm)
 library(readr)
 library(dplyr)
-library(plotly)
-library(png)
-library(htmlwidgets)
 ```
 
 ```{r data-prep}
@@ -36,11 +31,12 @@ tdm = TermDocumentMatrix(horror_articles.corpus) %>%
   as.matrix()
 words = sort(rowSums(tdm), decreasing = TRUE)
 df = data.frame(word = names(words), freq = words)
+
+# This line removes frequently appearing short word/determiners
 df <- df %>% filter(nchar(as.character(word)) > 2, word != "don’")
 ```
 
 ```{r wordcloud}
-# Create and Save Word Cloud
 word_cloud <- wordcloud2(df, fontFamily="Times New Roman")
 saveWidget(word_cloud, file="C:/Users/Jamal Mansuri/Documents/wordcloud.html")
 ```
